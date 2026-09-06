@@ -1,0 +1,94 @@
+name: Update Homebrew Manifest
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-manifest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get latest upstream release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          RELEASE=$(curl -fsSL \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/iqui27/nuvio-native-legacy/releases/latest)
+
+          TAG=$(echo "$RELEASE" | jq -r '.tag_name')
+
+          IPK_URL=$(echo "$RELEASE" | jq -r \
+            '.assets[] | select(.name | endswith(".ipk")) | .browser_download_url' | head -n 1)
+
+          if [ -z "$IPK_URL" ] || [ "$IPK_URL" = "null" ]; then
+            echo "No IPK found in latest release"
+            exit 1
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "ipk_url=$IPK_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Download latest IPK
+        run: |
+          curl -fL \
+            "${{ steps.release.outputs.ipk_url }}" \
+            -o latest.ipk
+
+      - name: Calculate IPK information
+        id: ipk
+        run: |
+          SHA256=$(sha256sum latest.ipk | awk '{print $1}')
+          SIZE=$(stat -c%s latest.ipk)
+
+          echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
+          echo "size=$SIZE" >> "$GITHUB_OUTPUT"
+
+      - name: Update manifest.json
+        env:
+          VERSION: ${{ steps.release.outputs.tag }}
+          IPK_URL: ${{ steps.release.outputs.ipk_url }}
+          SHA256: ${{ steps.ipk.outputs.sha256 }}
+          SIZE: ${{ steps.ipk.outputs.size }}
+        run: |
+          VERSION="${VERSION#v}"
+
+          cat > manifest.json <<EOF
+          {
+            "id": "space.nuvio.native.legacy",
+            "title": "Nuvio Legacy Native",
+            "version": "$VERSION",
+            "appDescription": "Native C/SDL2/GLES2 port of Nuvio TV for LG webOS.",
+            "iconUri": "https://raw.githubusercontent.com/kadhimomar1/nuvio-native-legacy/master/deploy/app/icon.png",
+            "sourceUrl": "https://github.com/kadhimomar1/nuvio-native-legacy",
+            "rootRequired": false,
+            "ipkUrl": "$IPK_URL",
+            "ipkHash": {
+              "sha256": "$SHA256"
+            },
+            "ipkSize": $SIZE
+          }
+          EOF
+
+      - name: Commit updated manifest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add manifest.json
+
+          if git diff --cached --quiet; then
+            echo "Manifest is already up to date."
+          else
+            git commit -m "Update Homebrew manifest"
+            git push
+          fi
