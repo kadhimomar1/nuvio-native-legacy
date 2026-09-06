@@ -9,8 +9,8 @@
     {
       "id": "space.nuvio.native.legacy",
       "title": "Nuvio Legacy Native",
-      "iconUri": "https://raw.githubusercontent.com/iqui27/nuvio-native-legacy/master/deploy/app/icon.png",
-      "manifestUrl": "https://raw.githubusercontent.com/iqui27/nuvio-native-legacy/master/manifest.json",
+      "iconUri": "https://raw.githubusercontent.com/kadhimomar1/nuvio-native-legacy/master/deploy/app/icon.png",
+      "manifestUrl": "https://raw.githubusercontent.com/kadhimomar1/nuvio-native-legacy/master/manifest.json",
       "pool": "main",
       "shortDescription": "Native Nuvio TV build for LG webOS."
     }
