@@ -1,14 +1,14 @@
 {
   "id": "space.nuvio.native.legacy",
   "title": "Nuvio Legacy Native",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "appDescription": "Native C/SDL2/GLES2 port of Nuvio TV for LG webOS.",
   "iconUri": "https://raw.githubusercontent.com/kadhimomar1/nuvio-native-legacy/master/deploy/app/icon.png",
   "sourceUrl": "https://github.com/kadhimomar1/nuvio-native-legacy",
   "rootRequired": false,
-  "ipkUrl": "https://github.com/iqui27/nuvio-native-legacy/releases/download/v1.5.3/space.nuvio.native.legacy_1.5.3_arm-highcache.ipk",
+  "ipkUrl": "https://github.com/iqui27/nuvio-native-legacy/releases/download/v1.5.4/space.nuvio.native.legacy_1.5.4_arm-highcache.ipk",
   "ipkHash": {
-    "sha256": "16843a5479fbdc4aae6ee8df3769dac9afd3a4768524aab647a517e2318a550c"
+    "sha256": "90619fff0cb0d0cefcc1b481f9b4e34f91a5416ec2850cdb8bdf7ae1a3a2a502"
   },
-  "ipkSize": 48389834
+  "ipkSize": 48393400
 }
